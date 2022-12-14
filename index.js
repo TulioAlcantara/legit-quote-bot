@@ -5,8 +5,7 @@ const { TwitterApi } = require("twitter-api-v2");
 require("dotenv").config();
 
 const QUOTE_URL = "https://api.quotable.io/random";
-const CHARACTER_URL =
-  "https://bestrandoms.com/get-random-best-movie-characters-of-all-time";
+const CHARACTER_URL = "https://bestrandoms.com/random-character";
 
 const main = async () => {
   const quote = await getQuote();
@@ -22,14 +21,16 @@ const main = async () => {
     accessSecret: process.env.TWITTER_ACCESS_SECRET,
   });
 
-  // const mediaId = await userClient.v1.uploadMedia("./image.jpg");
-  // console.log(mediaId);
+  const mediaId = await userClient.v1.uploadMedia("./image.jpeg");
+  console.log("Media Id:", mediaId);
 
-  // await userClient.v2.tweet(`${quote}\n\n- ${character}`, {
-  //   media: {
-  //     media_ids: [mediaId],
-  //   },
-  // });
+  await userClient.v2.tweet(`${quote}\n\n- ${character}`, {
+    media: {
+      media_ids: [mediaId],
+    },
+  });
+
+  console.log("Tweeted!");
 };
 
 const getQuote = async () => {
@@ -38,21 +39,28 @@ const getQuote = async () => {
 };
 
 const getCharacter = async () => {
-  const characterPageRes = await axios.get(CHARACTER_URL, {
-    headers: { "Accept-Encoding": "gzip,deflate,compress" },
-  });
+  const characterPageRes = await axios.post(
+    CHARACTER_URL,
+    {
+      quantity: "1",
+      rank: "1000",
+    },
+    {
+      headers: { "Accept-Encoding": "gzip,deflate,compress" },
+    }
+  );
+
   const characterPageHtml = characterPageRes.data;
   const $ = cheerio.load(characterPageHtml);
 
   let character = $(
-    "li.res-item:nth-child(1) > div:nth-child(1) > div:nth-child(2) > h4:nth-child(1)"
-  ).text();
-
-  const [id, ...actualName] = character.split(" ");
-  character = actualName.join(" ");
+    ".content > ul:nth-child(2) > li:nth-child(1) > p:nth-child(2) > b:nth-child(1) > span:nth-child(1)"
+  )
+    .text()
+    .trim();
 
   const pictureUrl = $(
-    "li.res-item:nth-child(1) > div:nth-child(1) > div:nth-child(1) > a:nth-child(1) > img:nth-child(1)"
+    ".content > ul:nth-child(2) > li:nth-child(1) > p:nth-child(3) > img:nth-child(1)"
   ).attr("src");
 
   return [character, pictureUrl];
@@ -62,7 +70,13 @@ const dowloadPicture = async (url) => {
   const pictureRes = await axios.get(url, {
     responseType: "stream",
   });
-  pictureRes.data.pipe(fs.createWriteStream("image.jpg"));
+  return new Promise((resolve, reject) => {
+    pictureRes.data
+      .pipe(fs.createWriteStream("image.jpeg"))
+      .on("finish", () => {
+        resolve();
+      });
+  });
 };
 
 main();

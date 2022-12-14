@@ -1,7 +1,6 @@
 {
   "name": "random-quote-bot",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "devDependencies": {},
   "scripts": {
@@ -22,5 +21,6 @@
     "cheerio": "^1.0.0-rc.12",
     "dotenv": "^16.0.3",
     "twitter-api-v2": "^1.12.9"
-  }
+  },
+  "description": ""
 }
