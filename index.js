@@ -12,7 +12,7 @@ const main = async () => {
   const quote = await getQuote();
   const [character, pictureUrl] = await getCharacter();
   await dowloadPicture(pictureUrl);
-  // await tweet(quote, character, pictureUrl);
+  await tweet(quote, character, pictureUrl);
 };
 
 const tweet = async (quote, character, pictureUrl) => {
@@ -78,4 +78,4 @@ const dowloadPicture = async (url) => {
   });
 };
 
-getCharacter();
+main();
