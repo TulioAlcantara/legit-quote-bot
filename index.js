@@ -11,7 +11,10 @@ const main = async () => {
   const quote = await getQuote();
   const [character, pictureUrl] = await getCharacter();
   await dowloadPicture(pictureUrl);
+  await tweet(quote, character, pictureUrl);
+};
 
+const tweet = async (quote, character, pictureUrl) => {
   const userClient = new TwitterApi({
     appKey: process.env.TWITTER_API_KEY,
     appSecret: process.env.TWITTER_API_SECRET,
@@ -19,7 +22,7 @@ const main = async () => {
     accessSecret: process.env.TWITTER_ACCESS_SECRET,
   });
 
-  const mediaId = await userClient.v1.uploadMedia("./image.jpeg");
+  const mediaId = await userClient.v1.uploadMedia(pictureUrl);
   console.log("Media Id:", mediaId);
 
   await userClient.v2.tweet(`${quote}\n\n- ${character}`, {
@@ -39,28 +42,24 @@ const getQuote = async () => {
 };
 
 const getCharacter = async () => {
-  const characterPageRes = await axios.post(
-    CHARACTER_URL,
-    {
-      quantity: "1",
-      rank: "1000",
+  const characterPageRes = await axios.get(CHARACTER_URL, {
+    headers: {
+      "Accept-Encoding": "gzip,deflate,compress",
+      "User-Agent": "Axios 0.21.1",
     },
-    {
-      headers: { "Accept-Encoding": "gzip,deflate,compress" },
-    }
-  );
+  });
 
   const characterPageHtml = characterPageRes.data;
   const $ = cheerio.load(characterPageHtml);
 
   let character = $(
-    ".content > ul:nth-child(2) > li:nth-child(1) > p:nth-child(2) > b:nth-child(1) > span:nth-child(1)"
+    ".content > ul:nth-child(1) > li:nth-child(1) > p:nth-child(2)"
   )
     .text()
     .trim();
 
   const pictureUrl = $(
-    ".content > ul:nth-child(2) > li:nth-child(1) > p:nth-child(3) > img:nth-child(1)"
+    ".content > ul:nth-child(1) > li:nth-child(1) > p:nth-child(3) > img:nth-child(1)"
   ).attr("src");
 
   console.log(`${character}\n${pictureUrl}`);
