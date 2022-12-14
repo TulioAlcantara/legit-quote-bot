@@ -1,6 +1,7 @@
 const fs = require("fs");
 const axios = require("axios");
 const cheerio = require("cheerio");
+const cloudscraper = require("cloudscraper");
 const { TwitterApi } = require("twitter-api-v2");
 require("dotenv").config();
 
@@ -11,7 +12,7 @@ const main = async () => {
   const quote = await getQuote();
   const [character, pictureUrl] = await getCharacter();
   await dowloadPicture(pictureUrl);
-  await tweet(quote, character, pictureUrl);
+  // await tweet(quote, character, pictureUrl);
 };
 
 const tweet = async (quote, character, pictureUrl) => {
@@ -42,14 +43,7 @@ const getQuote = async () => {
 };
 
 const getCharacter = async () => {
-  const characterPageRes = await axios.get(CHARACTER_URL, {
-    headers: {
-      "Accept-Encoding": "gzip,deflate,compress",
-      "User-Agent": "Axios 0.21.1",
-    },
-  });
-
-  const characterPageHtml = characterPageRes.data;
+  const characterPageHtml = await cloudscraper.get(CHARACTER_URL);
   const $ = cheerio.load(characterPageHtml);
 
   let character = $(
@@ -84,4 +78,4 @@ const dowloadPicture = async (url) => {
   });
 };
 
-main();
+getCharacter();
