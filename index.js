@@ -22,7 +22,7 @@ const tweet = async (quote, character, pictureUrl) => {
     accessSecret: process.env.TWITTER_ACCESS_SECRET,
   });
 
-  const mediaId = await userClient.v1.uploadMedia(pictureUrl);
+  const mediaId = await userClient.v1.uploadMedia("image.jpeg");
   console.log("Media Id:", mediaId);
 
   await userClient.v2.tweet(`${quote}\n\n- ${character}`, {
@@ -69,6 +69,10 @@ const getCharacter = async () => {
 
 const dowloadPicture = async (url) => {
   const pictureRes = await axios.get(url, {
+    headers: {
+      "Accept-Encoding": "gzip,deflate,compress",
+      "User-Agent": "Axios 0.21.1",
+    },
     responseType: "stream",
   });
   return new Promise((resolve, reject) => {
