@@ -47,13 +47,7 @@ const getCharacter = async () => {
     uri: CHARACTER_URL,
     formData: { quantity: 1, rank: 1000 },
     headers: {
-      // User agent, Cache Control and Accept headers are required
-      // User agent is populated by a random UA.
-      "User-Agent":
-        "Ubuntu Chromium/34.0.1847.116 Chrome/34.0.1847.116 Safari/537.36",
-      "Cache-Control": "private",
-      Accept:
-        "application/xml,application/xhtml+xml,text/html;q=0.9, text/plain;q=0.8,image/png,*/*;q=0.5",
+      "User-Agent": "Safari/537.36",
     },
   };
 
