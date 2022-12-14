@@ -3,7 +3,25 @@ const axios = require("axios");
 const cheerio = require("cheerio");
 const cloudscraper = require("cloudscraper");
 const { TwitterApi } = require("twitter-api-v2");
+const express = require("express");
 require("dotenv").config();
+
+const app = express();
+
+const PORT = process.env.PORT || 3000;
+
+app.get("/ping", (req, res) => {
+  res.send("I'M ALIVE!");
+});
+
+app.get("/tweet", async (req, res) => {
+  await main();
+  res.send("Tweeted!");
+});
+
+app.listen(PORT, () => {
+  console.log(`Listening at http://localhost:${PORT}`);
+});
 
 const QUOTE_URL = "https://api.quotable.io/random";
 const CHARACTER_URL = "https://bestrandoms.com/random-character";
@@ -79,5 +97,3 @@ const dowloadPicture = async (url) => {
       });
   });
 };
-
-main();
