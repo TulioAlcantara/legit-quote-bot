@@ -12,8 +12,6 @@ const main = async () => {
   const [character, pictureUrl] = await getCharacter();
   await dowloadPicture(pictureUrl);
 
-  console.log(`${quote}\n${character}\n${pictureUrl}`);
-
   const userClient = new TwitterApi({
     appKey: process.env.TWITTER_API_KEY,
     appSecret: process.env.TWITTER_API_SECRET,
@@ -35,7 +33,9 @@ const main = async () => {
 
 const getQuote = async () => {
   const quoteApiRes = await axios.get(QUOTE_URL);
-  return quoteApiRes.data.content;
+  const quote = quoteApiRes.data.content;
+  console.log(`${quote}`);
+  return quote;
 };
 
 const getCharacter = async () => {
@@ -62,6 +62,8 @@ const getCharacter = async () => {
   const pictureUrl = $(
     ".content > ul:nth-child(2) > li:nth-child(1) > p:nth-child(3) > img:nth-child(1)"
   ).attr("src");
+
+  console.log(`${character}\n${pictureUrl}`);
 
   return [character, pictureUrl];
 };
