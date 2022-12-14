@@ -43,18 +43,26 @@ const getQuote = async () => {
 };
 
 const getCharacter = async () => {
-  const characterPageHtml = await cloudscraper.get(CHARACTER_URL);
+  var options = {
+    uri: CHARACTER_URL,
+    formData: { quantity: 1, rank: 1000 },
+    headers: {
+      // User agent, Cache Control and Accept headers are required
+      // User agent is populated by a random UA.
+      "User-Agent":
+        "Ubuntu Chromium/34.0.1847.116 Chrome/34.0.1847.116 Safari/537.36",
+      "Cache-Control": "private",
+      Accept:
+        "application/xml,application/xhtml+xml,text/html;q=0.9, text/plain;q=0.8,image/png,*/*;q=0.5",
+    },
+  };
+
+  const characterPageHtml = await cloudscraper.post(options);
   const $ = cheerio.load(characterPageHtml);
 
-  let character = $(
-    ".content > ul:nth-child(1) > li:nth-child(1) > p:nth-child(2)"
-  )
-    .text()
-    .trim();
+  let character = $("p.text-center:nth-child(2)").text().trim();
 
-  const pictureUrl = $(
-    ".content > ul:nth-child(1) > li:nth-child(1) > p:nth-child(3) > img:nth-child(1)"
-  ).attr("src");
+  const pictureUrl = $(".center-block").attr("src");
 
   console.log(`${character}\n${pictureUrl}`);
 
