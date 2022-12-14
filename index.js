@@ -10,13 +10,10 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
-app.get("/ping", (req, res) => {
-  res.send("I'M ALIVE!");
-});
+app.head("/ping", (req, res) => {});
 
-app.get("/tweet", async (req, res) => {
+app.head("/tweet", async (req, res) => {
   await main();
-  res.send("Tweeted!");
 });
 
 app.listen(PORT, () => {
